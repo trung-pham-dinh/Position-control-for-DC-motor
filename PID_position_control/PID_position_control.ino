@@ -29,6 +29,7 @@ PID pid(&input, &output, &setPoint, kp, ki, kd, DIRECT);
 
 int i = 1;
 int dir = 0;
+String readString = "";
 void setup() {
   Serial.begin(9600);
   
@@ -44,13 +45,23 @@ void setup() {
   if(digitalRead(ENCODERA)) oldState |= 1;
   if(digitalRead(ENCODERB)) oldState |= 2;
 
-  setPoint = 180;
+  setPoint = 0;
   input = 0;
   pid.SetMode(AUTOMATIC);
   pid.SetOutputLimits(-255,255);
 }
 
 void loop() {
+  while (Serial.available()) { //Check if the serial data is available.
+    delay(3);                  // a small delay
+    char c = Serial.read();  // storing input data
+    readString += c;         // accumulate each of the characters in readString
+  }
+  if (readString.length() >0) { //Verify that the variable contains information
+   Serial.println(readString.toInt());  //printing the input data in integer form
+    setPoint = readString.toInt();   // here input data is store in integer form
+  }
+  
   input = map(encoderCount, 0, 8600, 0, 360);
   pid.Compute();
   if(output < 0) {
@@ -61,9 +72,12 @@ void loop() {
     outputPWM = map(output, 0, 255 , 30, 255);
     setMotor(1, outputPWM);
   }
-  Serial.print(input);
-  Serial.print(' ');
+  Serial.print("Setpoint angle: ");
+  Serial.print(setPoint);
+  Serial.print("    ");
+  Serial.print("Output PWM: ");
   Serial.println(outputPWM);
+  readString = "";
 }
 
 void setMotor(int d, int s) {
