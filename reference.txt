@@ -1,0 +1,6 @@
+PID tuning: 
+  https://www.youtube.com/watch?v=qKy98Cbcltw
+Position control:
+  https://www.youtube.com/watch?v=K7FQSS_iAw0
+Library:
+  https://playground.arduino.cc/Code/PIDLibrary/
